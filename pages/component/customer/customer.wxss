@@ -1,0 +1,20 @@
+/* pages/component/customer/customer.wxss */
+@import "../bindTo/bindTo.wxss";
+
+.list-down{
+  position: absolute;
+  z-index: 1001;
+  background: #fff;
+  display: inline-block;
+  width: 100%;
+  left: 110px;
+  max-height:155px;
+  overflow-y: scroll; 
+}
+.list-item{
+  position: relative;
+  border-bottom:#dcdcdc solid 1px;
+  padding:10px 10px;
+  color: #000;
+  font-size: 14px;
+}

@@ -1,0 +1,17 @@
+
+<view class="container">
+
+  <view class="page-body">
+   <view class="page-section">
+    
+      <view class="btn-area">
+        <navigator url="../customer/customer?title=customer" hover-class="navigator-hover">
+            <button type="warn" formType="">发展新客户</button>
+        </navigator>
+        <navigator url="" hover-class="navigator-hover">
+            <button type="default" formType="" disabled="{{disabled}}">走访老客户(暂不支持)               </button>
+        </navigator>
+      </view>
+    </view>
+</view>
+</view>

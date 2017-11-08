@@ -1,0 +1,103 @@
+
+<view class="container">
+
+  <form class="page-body"  bindsubmit="formSubmit">
+   <view class="page-section">
+   <view class="weui-cells weui-cells_after-title">
+      <view class="weui-cell weui-cell_input">
+        <view class="weui-cell__hd">
+          <view class="weui-label">客户名称</view>
+        </view>
+        <view  class="weui-cell__bd">
+          <input class="weui-input" type="text"  bindinput="bindKeyInput"  placeholder="客户名称" name="name" value='{{custName}}' bindblur='bindOut'></input>
+        </view>
+      </view>
+    </view>
+    <view class='list-down' hidden='{{isHide}}'>
+      <view  wx:for="{{list}}">
+          <view  class='list-item'  catchtap='bindChangeName' data-id='{{item}}' >
+            {{item}}
+          </view> 
+       </view>
+    </view>
+  
+    </view>
+
+     <view class="page-section">
+   <view class="weui-cells weui-cells_after-title">
+      <view class="weui-cell weui-cell_input">
+        <view class="weui-cell__hd">
+          <view class="weui-label">客户分类</view>
+        </view>
+        <view class="weui-cell__bd">
+           <picker bindchange="bindPickerChange" value="{{index}}" range="{{array}}">
+              <view class="weui-input">{{array[index]}}</view>
+            </picker>
+        </view>
+      </view>
+    </view>
+    </view>
+
+       <view class="page-section">
+   <view class="weui-cells weui-cells_after-title">
+      <view class="weui-cell weui-cell_input">
+        <view class="weui-cell__hd">
+          <view class="weui-label">获得方式</view>
+        </view>
+        <view class="weui-cell__bd">
+           <picker bindchange="bindChangeFive" value="{{indexfive}}" range="{{arrayfive}}">
+              <view class="weui-input" >{{arrayfive[indexfive]}}</view>
+            </picker>
+        </view>
+      </view>
+    </view>
+    </view>
+
+    <view class="page-section">
+   <view class="weui-cells weui-cells_after-title">
+      <view class="weui-cell weui-cell_input">
+        <view class="weui-cell__hd">
+          <view class="weui-label">意向程度</view>
+        </view>
+        <view class="weui-cell__bd">
+           <picker bindchange="bindChangeAttend" value="{{indexattend}}" range="{{attend}}">
+              <view class="weui-input">{{attend[indexattend]}}</view>
+            </picker>
+        </view>
+      </view>
+    </view>
+    </view>
+ 
+ <view class="page-section">
+   <view class="weui-cells weui-cells_after-title">
+      <view class="weui-cell weui-cell_input">
+        <view class="weui-cell__hd">
+          <view class="weui-label">客户联系人</view>
+        </view>
+        <view class="weui-cell__bd">
+          <input class="weui-input" type="text" placeholder="客户联系人" name="customerContact" value='{{linkCust}}' bindinput="bindCustInput"></input>
+        </view>
+      </view>
+    </view>
+    </view>
+
+     <view class="page-section">
+   <view class="weui-cells weui-cells_after-title">
+      <view class="weui-cell weui-cell_input">
+        <view class="weui-cell__hd">
+          <view class="weui-label">联系电话</view>
+        </view>
+        <view class="weui-cell__bd">
+          <input class="weui-input" type="number" placeholder="联系电话" name="telephone" value='{{custTel}}' maxlength='11'  bindinput="bindTelInput"></input>
+        </view>
+      </view>
+    </view>
+    </view>
+   
+    <view class="btn-area">
+        <button type="primary" formType="submit" loading='{{isLoading}}'>{{custDegree}}</button>
+    </view>
+       
+  </form>
+ <modal title="{{dialog.title}}"  hidden="{{dialog.hidden}}" no-cancel bindconfirm="confirm">{{dialog.content}}</modal>
+</view>

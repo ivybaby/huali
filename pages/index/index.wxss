@@ -1,0 +1,60 @@
+@import "../common/lib/weui.wxss";
+
+/*.weui-article__h1{
+  text-align: center;
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 40px;
+}
+.page-section > .page-body-button{
+  margin-top:40rpx;
+  margin-left:15px;
+  margin-right: 15px;
+}
+
+.company-logo{
+  text-align: center;
+  margin: auto;
+  margin-top: 40px;
+  width: 128px;
+
+  max-height: 200px;
+  
+}
+.company-img{
+  width: 100%;
+  height: 55px;
+  
+}*/
+@import "../common/lib/weui.wxss";
+
+.page-section{
+  margin-top: 20rpx;
+  margin-bottom: 20rpx;
+}
+.send-item{
+  position: relative;
+}
+.send-btn{
+  position: absolute;
+  right:15px;
+  font-size: 15px;
+  top: 3rpx;
+  margin-top: 5rpx;
+  margin-bottom: 5rpx;
+  padding-left: 10px;
+  padding-right: 10px;
+  width: 100px;
+  text-align: center;
+}
+.send-item-input{
+  margin-right:103px;
+}
+.code-warning{
+  padding-left: 15px;
+  margin-top: 10rpx;
+  display: inline-block;
+}
+.btn-area{
+  margin-top:0;
+}

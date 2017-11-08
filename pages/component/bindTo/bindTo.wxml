@@ -1,0 +1,88 @@
+
+<view class="container">
+
+   <view class="page-body">
+    <form class="page-body"  bindsubmit="formSubmit">
+    <view class="page-section">
+      <view class="weui-cells weui-cells_after-title">
+        <view class="weui-cell weui-cell_input">
+          <view class="weui-cell__hd">
+            <view class="weui-label">姓名</view>
+          </view>
+          <view class="weui-cell__bd">
+            <input class="weui-input" type="text" placeholder="请输入姓名" name="key" value="{{key}}" bindinput="keyChange"></input>
+          </view>
+        </view>
+       
+
+     <view class="weui-cell weui-cell_input">
+          <view class="weui-cell__hd">
+            <view class="weui-label">地区</view>
+          </view>
+          <view class="weui-cell__bd">
+             <picker bindchange="bindPickerChange" value="{{index}}" range="{{array}}">
+              <view class="weui-input">{{array[index]}}</view>
+            </picker>
+          </view>
+        </view>
+         <view class="weui-cell weui-cell_input">
+          <view class="weui-cell__hd">
+            <view class="weui-label">分公司</view>
+          </view>
+          <view class="weui-cell__bd">
+             <picker bindchange="bindComChange" value="{{indexCom}}" range="{{arrayCompany}}">
+              <view class="weui-input">{{arrayCompany[indexCom]}}</view>
+            </picker>
+          </view>
+        </view>
+       <!--<view class="weui-cell weui-cell_input">
+          <view class="weui-cell__hd">
+            <view class="weui-label">地区</view>
+          </view>
+          <view class="weui-cell__bd">
+             <picker mode="multiSelector" bindchange="bindMultiPickerChange" bindcolumnchange="bindMultiPickerColumnChange" value="{{multiIndex}}" range="{{multiArray}}">
+    <view class="weui-input picker">
+      {{multiArray[0][multiIndex[0]]}}  {{multiArray[1][multiIndex[1]]}}
+    </view>
+  </picker>
+          </view>
+        </view>-->  
+         <view class="weui-cell weui-cell_input">
+          <view class="weui-cell__hd">
+            <view class="weui-label">电话</view>
+          </view>
+          <view class="weui-cell__bd">
+            <input class="weui-input" type="number" placeholder="请输入电话" name="data" value="{{data}}" bindinput="dataChange" maxlength='11'></input>
+          </view>
+        </view>
+         <view class="weui-cell weui-cell_input send-item">
+          <view class="weui-cell__hd">
+            <view class="weui-label">验证码</view>
+          </view>
+          <view class="weui-cell__bd">
+            <input class="weui-input send-item-input" type="number" placeholder="验证码" name="code" value="{{code}}" bindinput="codeChange" maxlength='6'></input>
+          </view>
+          <button class='send-btn' bindtap='bindCode' type='warn' disabled='{{isNull}}'>{{verCode}}</button> 
+        </view>
+        
+      <!--  <view class="weui-cell weui-cell_input">
+          <view class="weui-cell__hd">
+            <view class="weui-label">日期</view>
+          </view>
+          <view class="weui-cell__bd">
+           <picker mode="date" value="{{dateTime}}" start="2015-09-01" end="2020-09-01" bindchange="bindDateChange">
+              <view class="weui-input">{{dateTime}}</view>
+            </picker>
+          </view>
+        </view>-->
+      </view>
+      <text class="weui-cell_warn code-warning">{{isCodeTrue}}</text>
+      <view class="btn-area">
+        <button type="primary" form-type="submit" loading='{{isLoading}}'>绑定</button>
+      </view>
+    </view>
+    </form>
+  </view>
+ <modal title="{{dialog.title}}"  hidden="{{dialog.hidden}}" no-cancel bindconfirm="confirm">{{dialog.content}}</modal>
+
+</view>
