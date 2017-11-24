@@ -1,0 +1,98 @@
+<view class="page">
+  <view class="page__bd">
+    <!-- weui-search-bar start -->
+          <view class="weui-search-bar">
+            <view class="weui-search-bar__form">
+              <view class="weui-search-bar__box">
+                <icon class="weui-icon-search_in-box" type="search" size="14"></icon>
+                <input type="text" class="weui-search-bar__input" placeholder="搜索" value="{{inputVal}}" focus="{{inputShowed}}" bindinput="inputTyping" />
+                <view class="weui-icon-clear" wx:if="{{inputVal.length > 0}}" bindtap="clearInput">
+                  <icon type="clear" size="14"></icon>
+                </view>
+              </view>
+              <label class="weui-search-bar__label" hidden="{{inputShowed}}" bindtap="showInput">
+                <icon class="weui-icon-search" type="search" size="14"></icon>
+                <view class="weui-search-bar__text">搜索</view>
+              </label>
+            </view>
+            <navigator url="../customer/customer?title=customer" hidden="{{inputShowed}}">
+              <image class='add-user' src='../../image/user.png'></image>
+            </navigator>
+            <view class="weui-search-bar__cancel-btn" hidden="{{!inputShowed}}" bindtap="hideInput">取消</view>
+
+          </view>
+          <!-- searchbar-result end -->
+
+    <!-- weui-tab start -->
+    <view class="weui-tab">
+      <view class="weui-navbar">
+        <block wx:for="{{tabs}}" wx:key="*this">
+          <view id="{{index}}" class="weui-navbar__item {{activeIndex == index ? 'weui-bar__item_on' : ''}}" bindtap="tabClick">
+            <view class="weui-navbar__title">{{item}}</view>
+          </view>
+        </block>
+        <view class="weui-navbar__slider" style="left: {{sliderLeft}}px; transform: translateX({{sliderOffset}}px); -webkit-transform: translateX({{sliderOffset}}px);"></view>
+      </view>
+      <view class="weui-tab__panel">
+        <view class="weui-tab__content" hidden="{{activeIndex != 0}}">
+         
+          <!-- searchbar-result start -->
+          <view class="weui-cells searchbar-result" wx:if="{{inputVal.length > 0}}">
+            <navigator url="" class="weui-cell" hover-class="weui-cell_active">
+              <view class="weui-cell__bd">
+                <view>实时搜索文本</view>
+              </view>
+            </navigator>
+            <navigator url="" class="weui-cell" hover-class="weui-cell_active">
+              <view class="weui-cell__bd">
+                <view>实时搜索文本</view>
+              </view>
+            </navigator>
+            <navigator url="" class="weui-cell" hover-class="weui-cell_active">
+              <view class="weui-cell__bd">
+                <view>实时搜索文本</view>
+              </view>
+            </navigator>
+            <navigator url="" class="weui-cell" hover-class="weui-cell_active">
+              <view class="weui-cell__bd">
+                <view>实时搜索文本</view>
+              </view>
+            </navigator>
+          </view>
+          <!-- searchbar-result end -->
+
+
+          <!-- item-list start -->
+          <view  class="weui-panel__bd item-list touch-item {{item.isTouchMove ? 'touch-move-active' : ''}}" data-index="{{index}}" bindtouchstart="touchstart" bindtouchmove="touchmove" wx:for="{{items}}" wx:key=""> 
+          <navigator url="../customer/customer?title=customer" class='content' hover-class="weui-cell_active">
+            <view class="weui-media-box weui-media-box_text">
+              <view class="weui-media-box__title weui-media-box__title_in-text">{{item.name}}</view>
+              <view class="weui-media-box__info">
+                <view class="weui-media-box__info__meta">{{item.customer}}</view>
+                <view class="weui-media-box__info__meta weui-media-box__info__meta_extra">{{item.tel}}</view>
+                <view class="weui-media-box__info__meta item-list-right item-list-impress">{{item.attend}}</view>
+              </view>
+              <view class="weui-media-box__desc"></view>
+              <view class="weui-media-box__info item-foot">
+                <view class="weui-media-box__info__meta">
+                最新:{{item.newtime}}</view>
+                <view class="weui-media-box__info__meta item-list-right">下次：{{item.datetime}}</view>
+              </view>
+            </view>
+            </navigator>
+            <view class="del" catchtap="del" data-index="{{index}}">删除</view>
+          </view>
+          <!-- item-list end -->
+     
+
+        </view>
+        <view class="weui-tab__content" hidden="{{activeIndex != 1}}">
+        </view>
+      </view>
+    </view>
+    <!-- weui-tab end -->
+
+
+
+  </view>
+</view>

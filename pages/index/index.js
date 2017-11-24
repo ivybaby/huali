@@ -231,19 +231,19 @@ Page({
    */
   onLoad: function (options) {
     /*
-    *增加测试
-     */
+    *增加测试*/
+    console.log("ss");
     wx.navigateTo({
-      url: '../component/choice/choice',
+      url: '../component/datalist/datalist',
     })
     var self = this;
-    console.log(isLogin+' '+wx.getStorageSync('sellerkey'));
+    console.log(wx.getStorageSync('sellerkey'));
 
      var isLogin = app.globalData.hasLogin;
      if ((wx.getStorageSync('sellerkey').length > 0) && (wx.getStorageSync('sellerkey') != '')) {
-       wx.navigateTo({
+     /*  wx.navigateTo({
          url: '../component/customer/customer',
-       })
+       })*/
      }else{
        // var isLogin=true;
        if (isLogin === false || typeof (isLogin) == 'undefined') {

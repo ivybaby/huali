@@ -2,9 +2,9 @@
   "pages":[
     "pages/index/index",
     "pages/logs/logs",
+    "pages/component/datalist/datalist",
     "pages/component/choice/choice",
     "pages/component/bindTo/bindTo",
-    
     "pages/component/customer/customer"
   ],
   "window":{
