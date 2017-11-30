@@ -64,6 +64,7 @@ const registerUrl = require('../../config').registerUrl + '/register.action';/* 
 
 var arrDis = new Array();
 var arrCom = new Array();
+var arrEnId = new Array();
 
 var app = getApp();
 Page({
@@ -90,7 +91,6 @@ Page({
     verCode: '发送验证码',
     countdown: 90,
     isCodeTrue: '',
-    enindex: 1,
     setKey: 'sellerkey',
     setKeyVal: ''
   },
@@ -128,21 +128,17 @@ Page({
     })
   },
   bindPickerChange: function (e) {
-
-
     this.setData({
       index: e.detail.value,
-      arrayCompany: arrCom[e.detail.value],
-
+      arrayCompany: arrCom[e.detail.value]
     });
 
   },
   bindComChange: function (e) {
 
-    var x = parseInt(e.detail.value) + 1;
+    var x = parseInt(e.detail.value);
     this.setData({
-      indexCom: e.detail.value,
-      enindex: x
+      indexCom: e.detail.value
     })
   },
   settime: function (obj) {
@@ -232,18 +228,23 @@ Page({
   onLoad: function (options) {
     /*
     *增加测试*/
-    console.log("ss");
-    wx.navigateTo({
-      url: '../component/datalist/datalist',
+   /*wx.navigateTo({
+      url: '../component/addCustomer/addCustomer'
     })
+    wx.switchTab({
+      url: '../component/datalist/datalist',
+    })*/
     var self = this;
     console.log(wx.getStorageSync('sellerkey'));
 
      var isLogin = app.globalData.hasLogin;
      if ((wx.getStorageSync('sellerkey').length > 0) && (wx.getStorageSync('sellerkey') != '')) {
-     /*  wx.navigateTo({
-         url: '../component/customer/customer',
-       })*/
+        /* wx.navigateTo({
+           url: '../component/customer/customer',
+         })*/
+         wx.switchTab({
+           url: '../component/datalist/datalist',
+         })
      }else{
        // var isLogin=true;
        if (isLogin === false || typeof (isLogin) == 'undefined') {
@@ -259,7 +260,6 @@ Page({
       wx.getUserInfo({
         success: function (res) {
           app.globalData.hasLogin=true;
-         // console.log("app.globalData.hasLogin  +" + app.globalData.hasLogin);
           self.update()
         }
       })
@@ -290,16 +290,20 @@ Page({
 
         if (oArea.length > 0) {
           arrCom.push(new Array());/* arrComde=[[],[]] */
+          arrEnId.push(new Array());
 
           for (i in oArea) {
             arrDis[i] = oArea[i].name;
             var tmp = new Array();
+            var oEnId = new Array();
             for (j in oArea[i].entList) {
               tmp[j] = oArea[i].entList[j].name;
+              oEnId[j] = oArea[i].entList[j].id;
             }
             arrCom[i] = tmp;
+            arrEnId[i] = oEnId;
           }
-
+         
           self.setData({
             array: arrDis,
             arrayCompany: arrCom[0],
@@ -441,7 +445,7 @@ Page({
             isLoading: false
           });
         } else {
-          if (/^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0-9]))\d{8}$/.test(data)) {
+          if (/^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0-9])|(17[0-9]))\d{8}$/.test(data)) {
             isTel = true;
 
             /* 验证码 */
@@ -478,28 +482,28 @@ Page({
       }
 
       if (isName && isTel && isCode) {
-        //console.log("enid"+that.data.enindex);
+        
         wx.request({/* 绑定 */
           url: registerUrl,
           method: 'POST',
           data: {
             name: that.data.key,
             phone: that.data.data,
-            entid: that.data.enindex,
+            entid: arrEnId[that.data.index][that.data.indexCom],
             code: that.data.code
           },
           header: { 'content-type': 'application/x-www-form-urlencoded' },
           success: function (res) {
+            console.log(arrEnId[that.data.index][that.data.indexCom]);
             // console.log(res);
             if (res.data.success) {//返回是成功的
 
               that.setData({
                 setKeyVal: res.data.dataRegister.sellerkey,
-
                 isLoading: false
               })
               wx.setStorageSync(that.data.setKey, that.data.setKeyVal);/* 缓存 sellerkey */
-              //  console.log(wx.getStorageSync('sellerkey'));
+              console.log(wx.getStorageSync('sellerkey'));
               wx.showToast({
                 title: '绑定成功',
                 icon: 'success',
@@ -507,7 +511,10 @@ Page({
               });
               setTimeout(function () {
                 /* 链接地址 */
-                wx.navigateTo({ url: '../component/customer/customer?title=customer' });
+                wx.switchTab({
+                  url: '../component/datalist/datalist',
+                })
+               /* wx.navigateTo({ url: '../component/customer/customer?title=customer' });*/
                 that.setData({
                   isCodeTrue: '',
                   isLoading: false
@@ -516,7 +523,6 @@ Page({
             } else {
               wx.showToast({
                 title: '绑定失败',
-                icon: 'fail',
                 duration: 1000
               });
               that.setData({
@@ -536,27 +542,7 @@ Page({
 
 
       }
-      /*
-      storageData = wx.getStorageSync(key);
-      if (storageData === "") {
-        this.setData({
-          key: key,
-          data: data,
-          'dialog.hidden': false,
-          'dialog.title': '读取数据失败',
-          'dialog.content': '找不到 姓名 对应的数据'
-        })
-      } else {
-        this.setData({
-          key: key,
-          data: data,
-          isLoading:true,
-          'dialog.hidden': false,
-          'dialog.title': '读取数据成功',
-          'dialog.content': "data: '" + storageData + "'"
-        });
-        wx.navigateTo({ url: '../choice/choice?title=choice' });
-      }*/
+     
     }
 
   },

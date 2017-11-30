@@ -1039,4 +1039,9 @@ icon {
   line-height: 28px;
   color: #09BB07;
   white-space: nowrap;
+  padding-top:3px;
+}
+
+picker[disabled],.weui-input[disabled]{
+  color:#707070;
 }

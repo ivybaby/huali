@@ -16,7 +16,7 @@ Page({
     inputShowed: false,
     inputVal: "",
     tabs: ["意向选择", "下次拜访时间"],
-    activeIndex: 0,
+    activeIndex: 1,
     sliderOffset: 0,
     sliderLeft: 0,
     list: [],//意向选择
@@ -275,7 +275,7 @@ Page({
       num: pageNum,
       orderby: that.data.activeIndex
     });
-    setTimeout(function () { 
+    setTimeout(function () {
       wx.hideLoading()
     }, 1000)
 

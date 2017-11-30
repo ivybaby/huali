@@ -1,0 +1,2 @@
+/* pages/component/datalist/datalist.wxss */
+@import "../datalist/datalist.wxss";

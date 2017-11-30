@@ -5,12 +5,34 @@
     "pages/component/datalist/datalist",
     "pages/component/choice/choice",
     "pages/component/bindTo/bindTo",
-    "pages/component/customer/customer"
+    "pages/component/customer/customer",
+    "pages/component/newpage/newpage",
+    "pages/component/nexttime/nexttime",
+    "pages/component/addCustomer/addCustomer"
   ],
   "window":{
     "backgroundTextStyle":"light",
     "navigationBarBackgroundColor": "#fff",
     "navigationBarTitleText": "WeChat",
     "navigationBarTextStyle":"black"
-  }
+  },
+    "tabBar": {
+      "color": "#dcdcdc",
+      "selectedColor": "#3cc51f",
+      "list": [
+        {
+          "pagePath": "pages/component/datalist/datalist",
+          "text": "意向选择",
+          "iconPath":"pages/image/attend.png",
+          "selectedIconPath":"pages/image/attend_active.png"
+        },
+        {
+          "pagePath": "pages/component/nexttime/nexttime",
+          "text": "下次拜访时间",
+          "iconPath": "pages/image/time.png",
+          "selectedIconPath": "pages/image/time_active.png",
+          "title":"llalalal"
+        }
+      ]
+    }
 }

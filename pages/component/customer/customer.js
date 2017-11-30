@@ -1,8 +1,11 @@
 // pages/component/customer/customer.js
+var util = require('../../../utils/util.js');
 const requestUrl = require('../../../config').requestUrl +'/customerList.action';/* 用户是否已存在 */
 
 const optionUrl = require('../../../config').optionUrl +'/optionList.action';
 const upUrl = require('../../../config').upUrl +'/newCustomer.action';
+
+const visitUrl = require('../../../config').visitUrl + '/newVisit.action';
 
 var arrayArr = [], 
 arrayfiveArr=[],
@@ -16,16 +19,18 @@ Page({
    * 页面的初始数据
    */
   data: {
-    disabled: true,
     index: 0,
     indexfive:0,
     indexattend:0,
     isData: false,
+    dateTime:'',
     dialog: {
       title: '',
       content: '',
       hidden: true
     },
+    isTimeDis:true,
+    isDis:true,
     customerName:'',
     isHide:true,
     custName:'',
@@ -35,9 +40,16 @@ Page({
     must2:false,
     must3:false,
     isLoading:false,
+    isAddLoading: false,
     list:'',
-    custDegree:'提交',
-    ismethod:'insert'
+    custDegree:'编辑',
+    ismethod:'insert',
+    getAttend:''
+  },
+  bindDateChange: function (e) {
+    this.setData({
+      dateTime: e.detail.value
+    })
   },
   bindPickerChange: function (e) {
    /* console.log('picker发送选择改变，携带值为', e.detail.value)*/
@@ -53,21 +65,25 @@ Page({
   },
   bindChangeAttend: function (e) {
     /* console.log('picker发送选择改变，携带值为', e.detail.value)*/
-    this.setData({
+    var that=this;
+    that.setData({
       indexattend: e.detail.value
     })
-  },
-  regSplit: function (keyWord,list){ /* 查找 */
-    var len = list.length;
-    var arr = [];
-    var reg = new RegExp(keyWord);
-    for (var i = 0; i < len; i++) {
-      //如果字符串中不包含目标字符会返回-1
-      if (list[i].match(reg)) {
-        arr.push(list[i]);
-      }
+    if (that.data.indexattend == '0' || that.data.indexattend == '3') {
+      that.setData({
+        isTimeDis: true,
+        dateTime: ''
+      })
+    }else{
+      // 调用函数时，传入new Date()参数，返回值是日期和时间  
+      var time = util.formatTime(new Date());
+      var finalTime = time.substring(0, time.indexOf(' ')).split('/').join('-');
+      // 再通过setData更改Page()里面的data，动态更新页面的数据  
+      that.setData({
+        dateTime: finalTime,
+        isTimeDis: false
+      });
     }
-    return arr;
   },
   bindCustInput:function(e){
     this.setData({
@@ -82,243 +98,74 @@ Page({
   bindKeyInput: function (e) {
     /* 每次输入的时候 */
     var inputValue = e.detail.value.replace(/\s*/, "");
-    
+
     /*  获取数据*/
     var self = this;
- 
     self.setData({
       loading: true,
       custName: inputValue,
-      isHide:false,
-      ismethod:'insert'
+      isHide: false
     })
-    if (inputValue.length>0){
-      /* 发送请求 数据库是否有匹配客户名称 */
-     // console.log(wx.getStorageSync('sellerkey'));
-      console.log(wx.getStorageSync('sellerkey'));
-      wx.request({
-        url: requestUrl,
-        method: 'POST',
-        data: {
-          sellerkey:wx.getStorageSync('sellerkey')
-          //sellerkey:'UsyPq7SdOvA='
-        },
-        header: { 'content-type': 'application/x-www-form-urlencoded' },
-        success: function (result) {
-          /* wx.showToast({
-             title: '请求成功',
-             icon: 'success',
-             mask: true,
-             duration: duration
-           })*/
-          console.log(result);
-          var oName = result.data.dataCustomerList.customerList;
-          var originData=new Array();
-          for (var i in oName) {
-          
-            originData[i] = oName[i].name;
-            
-            var arr = self.regSplit(inputValue, originData);
-            self.setData({
-              list: arr
-            });
-            //console.log(arr);
-          
-          
-          if (arr.length > 0) {
-             // console.log(arr.length);
-              self.setData({
-                isData: true
-              });
-            }
-          }
-          
-          self.setData({
-            isLoading: false
-          })
-          
-          
-        },
-
-        fail: function ({ errMsg }) {
-          console.log('request fail', errMsg)
-          self.setData({
-            isLoading: false
-          })
-        }
-      });
-     
-     
-  
-    }
-  
-    console.log('bindKeyInput   ');
   },
-  /* 点击下拉框 */
-  bindChangeName: function (e) {
-    var self = this;
-
-    var inVal = e.currentTarget.dataset.id;
-
-    self.setData({
-      custName: inVal,
-      list: '',
-      custDegree: '提交',
-      ismethod: 'insert',
-      index: 0,
-      indexfive: 0,
-      indexattend: 0,
-      linkCust: '',
-      custTel: '',
-      customerName:''
-    });
-
-    var inputValue = self.data.custName;
+  addVisiteItem:function(e){
+    
+    var that=this;
+    that.setData({
+      isAddLoading: true
+    })
+    //var x1 = parseInt(that.data.index) + 1;
+   // var x2 = parseInt(that.data.indexfive) + 1;
+    var x3 = parseInt(that.data.indexattend) + 1;
     
     wx.request({
-      url: requestUrl,/* 用户已存在.josn */
+      url: visitUrl,
       method: 'POST',
       data: {
-        sellerkey:wx.getStorageSync('sellerkey')
-        //sellerkey: 'UsyPq7SdOvA='
+        customerid: that.data.customerName,
+        intent:x3,
+        linkman: that.data.linkCust,
+        phone: that.data.custTel,
+        //sellerkey: '+vo+cgvtgnw='
+        sellerkey: wx.getStorageSync('sellerkey')
       },
       header: { 'content-type': 'application/x-www-form-urlencoded' },
       success: function (result) {
-        var i = 0;
-        var oName = result.data.dataCustomerList.customerList;
-        for (i in oName) {
-
-          if (oName[i].name === inputValue) {
-
-            if (oName.length > 0) {
-              self.setData({
-                custName: inputValue,
-                index: parseInt(oName[i].type)-1,
-                indexfive: parseInt(oName[i].gain)-1,
-                indexattend: parseInt(oName[i].intent)-1,
-                linkCust: oName[i].linkman,
-                custTel: oName[i].phone,
-                custDegree: '编辑',
-                ismethod: 'update',
-                customerName: oName[i].customerid
-              });
-            } else {
-              self.setData({
-                index: 0,
-                indexfive: 0,
-                indexattend: 0,
-                linkCust: '',
-                custTel: ''
-              });
-            }
-            return;
-          }
-        }
-        /**如果下拉框内数据对应没有数据  */
-        if ((i + 1) != oName.length) {
-          self.setData({
-            index: 0,
-            indexfive: 0,
-            indexattend: 0,
-            linkCust: '',
-            custTel: ''
-          });
-        }
-
-        self.setData({
-          isLoading: false
-
-        })
-        console.log("bindChangeName");
+        
+       if(result.data.success){
+         wx.showToast({
+           title: '添加记录成功',
+           icon: 'success',
+           duration: duration
+         });
+         setTimeout(function () {
+           that.setData({
+             isAddLoading: false
+           });
+         }, duration);
+       }else{
+         wx.showToast({
+           title: '添加记录失败',
+           //icon: 'fail',
+           duration: duration
+         });
+         setTimeout(function () {
+           that.setData({
+             isAddLoading: false
+           });
+         }, duration);
+       }
+        
 
       },
       fail: function ({ errMsg }) {
         console.log('request fail', errMsg)
-        self.setData({
+        that.setData({
           isLoading: false
         })
       }
     });
-
-
-
   },
-  /* 下拉框失去焦点  */
-  bindOut:function(e){
-   var self = this;
-  
-   var inputValue = e.detail.value.replace(/\s*/, "");
-     self.setData({
-       isHide: true,
-       custName: inputValue,
-       custDegree: '提交',
-       ismethod: 'insert',
-       index: 0,
-       indexfive: 0,
-       indexattend: 0,
-       linkCust: '',
-       custTel: '',
-       customerName:''
-     });
-    wx.request({
-      url: requestUrl,
-       method: 'POST',
-       data: {
-         sellerkey:wx.getStorageSync('sellerkey')
-         //sellerkey: 'UsyPq7SdOvA='
-       },
-       header: { 'content-type': 'application/x-www-form-urlencoded' },
-       success: function (result) {
-         var i = 0;
-         var oName = result.data.dataCustomerList.customerList;
-         for (i in oName) {
-
-           if (oName[i].name === inputValue) {
-            
-             if (oName.length > 0) {  
-               self.setData({
-                 custName: inputValue,
-                 index: parseInt(oName[i].type)-1,
-                 indexfive: parseInt(oName[i].gain)-1,
-                 indexattend: parseInt(oName[i].intent)-1,
-                 linkCust: oName[i].linkman,
-                 custTel: oName[i].phone,
-                 custDegree: '编辑',
-                 ismethod:'update',
-                 customerName: oName[i].customerid
-               });
-
-             } 
-             break;
-           }
-         }
-         /**如果对应没有数据 */
-         if (((i + 1) == oName.length) && (self.data.custDegree=='提交')) {
-           self.setData({
-             index: 0,
-             indexfive: 0,
-             indexattend: 0,
-             linkCust: '',
-             custTel: ''
-           });
-         }
-         self.up
-         self.setData({
-           isLoading: false
-         })
-
-       },
-       fail: function ({ errMsg }) {
-         console.log('request fail', errMsg)
-         self.setData({
-           isLoading: false
-         })
-       }
-     });
-     console.log('bindOut  ');
-   
-},
-
+ 
   /**
    * 生命周期函数--监听页面加载
    */
@@ -326,42 +173,41 @@ Page({
     var self=this;
     /* 设置标题 */
     wx.setNavigationBarTitle({
-      title: '客户信息登记',
+      title: '客户信息查看',
       success: function () {
-        console.log('setNavigationBarTitle success')
+        //console.log('setNavigationBarTitle success')
       },
       fail: function (err) {
-        console.log('setNavigationBarTitle fail, err is', err)
+        //console.log('setNavigationBarTitle fail, err is', err)
       }
     });
-
     wx.request({
-      url: optionUrl,/* array.josn */
+      url: optionUrl,
       method: 'POST',
       data: {},
       header: {
         'content-type': 'application/json' // 默认值
       },
       success: function (result) {
-       
+
         var oList = result.data.dataOptionList;
         var i = 0;
-       
-        for (var j in oList.typeList){
-            arrayArr[j] = oList.typeList[j]['name'];
+
+        for (var j in oList.typeList) {
+          arrayArr[j] = oList.typeList[j]['name'];
         }
-       
+
         for (var j in oList.gainList) {
-            arrayfiveArr[j] = oList.gainList[j]['name'];
+          arrayfiveArr[j] = oList.gainList[j]['name'];
         }
-         
+
         for (var j in oList.intentList) {
-            attendArr[j] = oList.intentList[j]['name'];
+          attendArr[j] = oList.intentList[j]['name'];
         }
         self.setData({
-            array: arrayArr,
-            arrayfive: arrayfiveArr,
-            attend: attendArr
+          array: arrayArr,
+          arrayfive: arrayfiveArr,
+          attend: attendArr
         });
 
       },
@@ -372,9 +218,50 @@ Page({
         })
       }
     });
+    self.setData({
+      getAttend: options.attend
+    })
+    var getFormData = JSON.parse(options.tranData); 
+    /*var getFormData = {
+      "addtime": "2017-11-21T09:03:26","areaid":1,
+"code":"331520170008",
+"customerid":8,
+"entid":0,
+"gain":2,
+"gainStr":"朋友介绍",
+"intent":3,
+"intentStr":"意向强烈",
+"linkman":"同脑",
+"name":"浙江科技1",
+"nextvisit":"2017-11-29T00:00:00",
+"phone":"18868823613",
+"sellerid":2,
+"splitNextvisit":"2017-11-29",
+"splitUpdatetime":"2017-11-21",
+"type":1,
+"typeStr":"工商业能耗管理型",
+"updatetime":"2017-11-21T09:03:26"
+};*/
+    var oNext = getFormData.nextvisit;
 
+    var oNextvisit;
+    if (oNext === null || (oNext.replace(/\s*/, "").length == 0)) {
+      oNextvisit = '';
+    } else {
+      oNextvisit = oNext.substring(0, oNext.indexOf('T'));
+    }
 
-
+    self.setData({
+      custName: getFormData.name,
+      index: parseInt(getFormData.type) - 1,
+      indexfive: parseInt(getFormData.gain) - 1,
+      indexattend: parseInt(getFormData.intent) - 1,
+      linkCust: getFormData.linkman,
+      custTel: getFormData.phone,
+      dateTime: oNextvisit,
+      ismethod: 'update',
+      customerName: getFormData.customerid
+    });
 
   },
 
@@ -459,18 +346,7 @@ Page({
          } else {
            this.must1 = true;
          }
-        
-     /* } else {
-         this.setData({
-           targtVal: textVal,
-           'dialog.hidden': false,
-           'dialog.title': modalMessage + '格式错误',
-           'dialog.content': ''
-         });
-        
-         this.must2 = false;
-         this.must1 = false;
-      }*/
+    
      }else{
       /* if (/^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0-9]))\d{8}$/.test(textVal)) {
        */
@@ -497,163 +373,120 @@ Page({
      
     }
   },
+  onRequestEdit:function(x1,x2,x3){
+    var that=this;
+    wx.request({  //编辑 
+      url: upUrl,
+      method: 'POST',
+      data: {
+        method: that.data.ismethod,
+        name: that.data.custName,
+        customerid: that.data.customerName,
+        type: x1,
+        gain: x2,
+        intent: x3,
+        linkman: that.data.linkCust,
+        phone: that.data.custTel,
+        nextvisit: that.data.dateTime,
+        //sellerkey:'+vo+cgvtgnw='
+        sellerkey: wx.getStorageSync('sellerkey')
+      },
+      header: { 'content-type': 'application/x-www-form-urlencoded' },
+      success: function (res) {
+        console.log(that.data.ismethod + ' ' + that.data.custName + ' ' + that.data.customerName);
+        console.log(res);
+        if (res.data.success) {
+          that.setData({
+            isLoading: true
+          });
+          wx.showToast({
+            title: '更新成功',
+            icon: 'success',
+            duration: duration
+          });
+          setTimeout(function () {
+            that.setData({
+              isLoading: false
+            });
+            if (that.data.getAttend==='0'){
+              wx.switchTab({
+                url: '../../component/datalist/datalist'
+              })
+            }else{
+              wx.switchTab({
+                url: '../../component/nexttime/nexttime'
+              })
+            }
+           // wx.navigateBack();
+           /* wx.switchTab({
+              url: '../../component/datalist/datalist'
+            })*/
+          }, duration);
+        } else {
+          wx.showToast({
+            title: '更新失败',
+            icon: 'fail',
+            duration: duration
+          });
+          that.setData({
+            isLoading: false
+          });
+        }
+      },
+      fail: function ({ errMsg }) {
+
+        that.setData({
+          isCodeTrue: errMsg,
+          isLoading: false
+        })
+      }
+    }) 
+
+  },
   formSubmit: function (e) {
     var that=this;
-    that.setData({
+   /* that.setData({
       isLoading: true
-    });
+    });*/
+    if (that.data.custDegree=='编辑'){
+       console.log("编辑");
+       that.setData({
+         custDegree: '提交修改',
+         isDis:false,
+         isTimeDis:false
+       });
+       if (that.data.indexattend == '0' || that.data.indexattend == '3'){
+         that.setData({
+           isTimeDis: true
+         })
+       }
+    } else { //提交修改
+     
+      var oName = e.detail.value.name.replace(/\s*/, ""); /*客户名称*/
+      var oContact = e.detail.value.customerContact.replace(/\s*/, "");/* 客户联系人 */
+      var oTelephone = e.detail.value.telephone.replace(/\s/, "");/* 联系电话 */
+
+      that.regTrue(oName, true, that.custName, "客户名称");
+
+      if (that.must1) {
+        that.regTrue(oContact, true, that.linkCust, "客户联系人", true);
+        if (that.must2) {
+          that.regTrue(oTelephone, false, that.custTel, "联系电话");
+        }
+      }
+      var x1 = parseInt(that.data.index) + 1;
+      var x2 = parseInt(that.data.indexfive) + 1;
+      var x3 = parseInt(that.data.indexattend) + 1;
+
+      if (that.must1 && that.must2 && that.must3) {
+        that.onRequestEdit(x1, x2, x3);
+      }
+      
+    }
    
  
-    var oName = e.detail.value.name.replace(/\s*/, ""); /*客户名称*/ 
-    var oContact = e.detail.value.customerContact.replace(/\s*/, "");/* 客户联系人 */
-    var oTelephone = e.detail.value.telephone.replace(/\s/, "");/* 联系电话 */
-    
-    that.regTrue(oName, true, that.custName,"客户名称");
-    
-    if (that.must1){
-      that.regTrue(oContact, true, that.linkCust, "客户联系人",true);
-      if (that.must2){
-        that.regTrue(oTelephone, false, that.custTel, "联系电话");
-      }
-    }
-    var x1 =parseInt(that.data.index)+1;
-    var x2 = parseInt(that.data.indexfive)+1;
-    var x3 = parseInt(that.data.indexattend)+1;
+   
 
-    if (that.must1 && that.must2 && that.must3){
-      if(that.data.ismethod=='update'){
-        wx.request({  //编辑 
-          url: upUrl,
-          method: 'POST',
-          data: {
-            method: that.data.ismethod,
-            name: that.data.custName,
-            customerid: that.data.customerName,
-            type: x1,
-            gain: x2,
-            intent: x3,
-            linkman: that.data.linkCust,
-            phone: that.data.custTel,
-            sellerkey: wx.getStorageSync('sellerkey')
-          },
-          header: { 'content-type': 'application/x-www-form-urlencoded' },
-          success: function (res) {
-
-            console.log(that.data.ismethod + ' ' + that.data.custName + ' ' + x1 + ' ' + x2 + ' ' + x3 + ' ' + that.data.linkCust + ' ' + that.data.custTel + ' ' + wx.getStorageSync('sellerkey'));
-            console.log(res);
-            if (res.data.success) {
-              that.setData({
-                isLoading: true
-              });
-              wx.showToast({
-                title: '更新成功',
-                icon: 'success',
-                duration: duration
-              });
-              setTimeout(function () {
-                that.setData({
-                  custName: '',
-                  index: 0,
-                  indexfive: 0,
-                  indexattend: 0,
-                  linkCust: '',
-                  custTel: '',
-                  custDegree: '提交',
-                  isLoading: false
-                });
-              }, duration);
-            } else {
-              wx.showToast({
-                title: '更新失败',
-                icon: 'fail',
-                duration: duration
-              });
-              that.setData({
-                isLoading: false
-              });
-
-            }
-
-
-
-          },
-          fail: function ({ errMsg }) {
-            // console.log('submit form fail, errMsg is:', errMsg);
-            that.setData({
-              isCodeTrue: errMsg,
-              isLoading: false
-            })
-          }
-        }) 
-      }else{
-        wx.request({  //提交 
-          url: upUrl,
-          method: 'POST',
-          data: {
-            method: that.data.ismethod,
-            name: that.data.custName,
-            type: x1,
-            gain: x2,
-            intent: x3,
-            linkman: that.data.linkCust,
-            phone: that.data.custTel,
-            sellerkey: wx.getStorageSync('sellerkey')
-          },
-          header: { 'content-type': 'application/x-www-form-urlencoded' },
-          success: function (res) {
-
-          /*  console.log(that.data.ismethod + ' ' + that.data.custName + ' ' + x1 + ' ' + x2 + ' ' + x3 + ' ' + that.data.linkCust + ' ' + that.data.custTel + ' ' + wx.getStorageSync('sellerkey'));*/
-            console.log(res);
-            if (res.data.success) {
-              that.setData({
-                isLoading: true
-              });
-              wx.showToast({
-                title: '提交成功',
-                icon: 'success',
-                duration: duration
-              });
-              setTimeout(function () {
-                that.setData({
-                  custName: '',
-                  index: 0,
-                  indexfive: 0,
-                  indexattend: 0,
-                  linkCust: '',
-                  custTel: '',
-                  custDegree: '提交',
-                  isLoading: false
-                });
-              }, duration);
-            } else {
-              wx.showToast({
-                title: '提交失败',
-                icon: 'fail',
-                duration: duration
-              });
-              that.setData({
-                isLoading: false
-              });
-
-            }
-
-
-
-          },
-          fail: function ({ errMsg }) {
-            // console.log('submit form fail, errMsg is:', errMsg);
-            that.setData({
-              isCodeTrue: errMsg,
-              isLoading: false
-            })
-          }
-        }) 
-      }
-      
-     
-      
-    }
-    
     
   }
 })

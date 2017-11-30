@@ -4,8 +4,8 @@
 
 // 此处主机域名是解决方案分配的域名
 
-var host = "https://scm.energyman.cn"
-
+//var host = "http://183.129.224.70:8022" //测试地址
+var host = "https://scm.energyman.cn";
 var config = {
 
   // 下面的地址配合云端 Server 工作
@@ -13,13 +13,15 @@ var config = {
 
   // 登录地址，用于建立会话
   loginUrl: `${host}/scm`,
-
   messageUrl: `${host}/scm`,
   areaUrl: `${host}/scm`,
   optionUrl: `${host}/scm`,
   registerUrl: `${host}/scm`,
   requestUrl: `${host}/scm`,
   upUrl: `${host}/scm`,
+  datalistUrl:`${host}/scm`,
+  searchUrl: `${host}/scm`,
+  visitUrl: `${host}/scm`
 
   // 测试的请求地址，用于测试会话
   //requestUrl: `https://${host}/testRequest`,

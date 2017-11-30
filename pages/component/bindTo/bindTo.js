@@ -80,7 +80,6 @@ Page({
 
   },
   bindComChange: function (e) {
-   
     var x = parseInt(e.detail.value) + 1;
     this.setData({
       indexCom: e.detail.value,
@@ -181,8 +180,7 @@ Page({
     this.setData({
       dateTime: finalTime
     }); 
-     
- 
+    
     wx.request({
       url: arrayUrl,/* 地区.josn */
       method: 'POST',
@@ -195,7 +193,7 @@ Page({
         var i = 0;
         var j=0;
         var oArea = result.data.dataAreaEntList.areaEntList;
-
+        
         if (oArea.length>0){
           arrCom.push(new Array());/* arrComde=[[],[]] */
 
@@ -207,6 +205,7 @@ Page({
             }
             arrCom[i] = tmp;
           }
+         
 
           self.setData({
             array: arrDis,
@@ -230,10 +229,8 @@ Page({
     wx.setNavigationBarTitle({
       title: '业务员注册',
       success: function () {
-       // console.log('setNavigationBarTitle success')
       },
       fail: function (err) {
-       // console.log('setNavigationBarTitle fail, err is', err)
       }
     });
     
