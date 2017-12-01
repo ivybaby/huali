@@ -21,7 +21,8 @@ var config = {
   upUrl: `${host}/scm`,
   datalistUrl:`${host}/scm`,
   searchUrl: `${host}/scm`,
-  visitUrl: `${host}/scm`
+  visitUrl: `${host}/scm`,
+  sellerkeyUrl: `${host}/scm`
 
   // 测试的请求地址，用于测试会话
   //requestUrl: `https://${host}/testRequest`,

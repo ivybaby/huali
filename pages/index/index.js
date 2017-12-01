@@ -61,6 +61,7 @@ const loginUrl = require('../../config').loginUrl + '/sendSMS.action';
 const arrayUrl = require('../../config').areaUrl + '/areaEntList.action';/* 分公司 */
 const messageUrl = require('../../config').messageUrl + '/sendSMS.action';/* 发送手机号 */
 const registerUrl = require('../../config').registerUrl + '/register.action';/* 注册 */
+const sellerkeyUrl = require('../../config').sellerkeyUrl + '/checkSeller.action';/* 验证selleykey */
 
 var arrDis = new Array();
 var arrCom = new Array();
@@ -235,16 +236,36 @@ Page({
       url: '../component/datalist/datalist',
     })*/
     var self = this;
-    console.log(wx.getStorageSync('sellerkey'));
+   
 
-     var isLogin = app.globalData.hasLogin;
-     if ((wx.getStorageSync('sellerkey').length > 0) && (wx.getStorageSync('sellerkey') != '')) {
+    let skey = wx.getStorageSync('sellerkey');  //获取本地的sellerkey
+  
+    var isLogin = app.globalData.hasLogin;
+    if ((wx.getStorageSync('sellerkey').length > 0) && (wx.getStorageSync('sellerkey') != '')) {
         /* wx.navigateTo({
            url: '../component/customer/customer',
          })*/
-         wx.switchTab({
-           url: '../component/datalist/datalist',
-         })
+      wx.request({
+        url: sellerkeyUrl,
+        method: 'POST',
+        data: {
+          sellerkey: skey
+          },
+        header: { 'content-type': 'application/x-www-form-urlencoded' },
+        success: function (result) {
+          if (result.data.success) {
+            wx.switchTab({
+              url: '../component/datalist/datalist',
+            })
+          }else{
+            console.log('request fail', result.data.message);
+          }
+        },
+        fail: function ({ errMsg }) {
+          console.log('request fail', errMsg)
+        }
+      });
+     
      }else{
        // var isLogin=true;
        if (isLogin === false || typeof (isLogin) == 'undefined') {
@@ -503,7 +524,7 @@ Page({
                 isLoading: false
               })
               wx.setStorageSync(that.data.setKey, that.data.setKeyVal);/* 缓存 sellerkey */
-              console.log(wx.getStorageSync('sellerkey'));
+             // console.log(wx.getStorageSync('sellerkey'));
               wx.showToast({
                 title: '绑定成功',
                 icon: 'success',
