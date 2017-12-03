@@ -141,7 +141,7 @@ Page({
         //console.log(res);
       },
       fail: function ({ errMsg }) {
-        console.log(errMsg);
+        //console.log(errMsg);
         self.setData({
           loading: false
         })
@@ -213,11 +213,9 @@ Page({
             isLoading: false
           });
         }
-       
-
       },
       fail: function ({ errMsg }) {
-        console.log('request fail', errMsg)
+        //console.log('request fail', errMsg)
         self.setData({
           isLoading: false
         })
@@ -418,7 +416,7 @@ Page({
               },
               header: { 'content-type': 'application/x-www-form-urlencoded' },
               success: function (res) {
-               // console.log(res);
+                console.log(res);
                if(res.data.success){//返回是成功的
            
                  that.setData({
@@ -442,11 +440,22 @@ Page({
                    });
                  }, 500)
                }else{
-                 wx.showToast({
-                   title: '绑定失败',
-                   icon: 'fail',
-                   duration: 1000
-                 });
+                //  wx.showToast({
+                //    title: res.data.message,
+                //    //icon: 'fail',
+                //    duration: 1000
+                //  });
+                 wx.showModal({
+                   title: '提示',
+                   content: res.data.message,
+                   success: function (res) {
+                    //  if (res.confirm) {
+                       
+                    //  } else if (res.cancel) {
+                       
+                    //  }
+                   }
+                 })
                  that.setData({
                    isLoading: false
                  });

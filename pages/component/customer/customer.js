@@ -130,7 +130,7 @@ Page({
       },
       header: { 'content-type': 'application/x-www-form-urlencoded' },
       success: function (result) {
-        
+        //console.log("记录"+result);
        if(result.data.success){
          wx.showToast({
            title: '添加记录成功',
@@ -143,25 +143,45 @@ Page({
            });
          }, duration);
        }else{
-         wx.showToast({
-           title: '添加记录失败',
-           //icon: 'fail',
-           duration: duration
-         });
-         setTimeout(function () {
-           that.setData({
-             isAddLoading: false
-           });
-         }, duration);
+        //  wx.showToast({
+        //    title: result.data.message,
+        //    //icon: 'fail',
+        //    duration: duration
+        //  });
+         wx.showModal({
+           title: '提示',
+           showCancel: false,
+           content: result.data.message,
+           success: function (res) {
+            if (res.confirm) {
+              
+                that.setData({
+                  isAddLoading: false
+                });
+           
+           }
+           }
+         })
+        
        }
         
 
       },
       fail: function ({ errMsg }) {
-        console.log('request fail', errMsg)
-        that.setData({
-          isLoading: false
+        console.log('request fail', errMsg);
+        wx.showModal({
+          title: '提示',
+          showCancel: false,
+          content: '服务器错误',
+          success: function (res) {
+            if (res.confirm) {
+              that.setData({
+                isLoading: false
+              })
+            }
+          }
         })
+        
       }
     });
   },
@@ -179,6 +199,7 @@ Page({
       },
       fail: function (err) {
         //console.log('setNavigationBarTitle fail, err is', err)
+        
       }
     });
     wx.request({
@@ -213,9 +234,21 @@ Page({
       },
       fail: function ({ errMsg }) {
         console.log('request fail', errMsg)
-        self.setData({
-          isLoading: false
+        wx.showModal({
+          title: '提示',
+          showCancel: false,
+          content: '服务器错误',
+          success: function (res) {
+            if (res.confirm) {
+              self.setData({
+                isLoading: false
+              })
+            }//else if (res.cancel) {
+
+            //  }
+          }
         })
+        
       }
     });
     self.setData({
@@ -393,8 +426,8 @@ Page({
       },
       header: { 'content-type': 'application/x-www-form-urlencoded' },
       success: function (res) {
-        console.log(that.data.ismethod + ' ' + that.data.custName + ' ' + that.data.customerName);
-        console.log(res);
+        // console.log(that.data.ismethod + ' ' + that.data.custName + ' ' + that.data.customerName);
+        // console.log(res);
         if (res.data.success) {
           that.setData({
             isLoading: true
@@ -423,22 +456,45 @@ Page({
             })*/
           }, duration);
         } else {
-          wx.showToast({
-            title: '更新失败',
-            icon: 'fail',
-            duration: duration
-          });
-          that.setData({
-            isLoading: false
-          });
+          // wx.showToast({
+          //   title: '更新失败',
+          //   icon: 'fail',
+          //   duration: duration
+          // });
+          wx.showModal({
+            title: '提示',
+            showCancel: false,
+            content: res.data.message,
+            success: function (res) {
+              if (res.confirm) {
+                that.setData({
+                  isLoading: false
+                });
+              }//else if (res.cancel) {
+
+              //  }
+            }
+          })
+          
         }
       },
       fail: function ({ errMsg }) {
+        wx.showModal({
+          title: '提示',
+          showCancel: false,
+          content: '服务器错误',
+          success: function (res) {
+            if (res.confirm) {
+              that.setData({
+                isCodeTrue: errMsg,
+                isLoading: false
+              })
+            }//else if (res.cancel) {
 
-        that.setData({
-          isCodeTrue: errMsg,
-          isLoading: false
+            //  }
+          }
         })
+       
       }
     }) 
 

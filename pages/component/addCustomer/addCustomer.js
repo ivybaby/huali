@@ -162,7 +162,7 @@ Page({
 
     }*/
 
-    console.log('bindKeyInput   ');
+    //console.log('bindKeyInput   ');
   },
   /**
    * 生命周期函数--监听页面加载
@@ -189,7 +189,7 @@ Page({
     wx.setNavigationBarTitle({
       title: '新增客户',
       success: function () {
-       // console.log('setNavigationBarTitle success')
+       
       },
       fail: function (err) {
         //console.log('setNavigationBarTitle fail, err is', err)
@@ -204,33 +204,57 @@ Page({
         'content-type': 'application/json' // 默认值
       },
       success: function (result) {
+        if(result.data.success){
+          var oList = result.data.dataOptionList;
+          var i = 0;
 
-        var oList = result.data.dataOptionList;
-        var i = 0;
+          for (var j in oList.typeList) {
+            arrayArr[j] = oList.typeList[j]['name'];
+          }
 
-        for (var j in oList.typeList) {
-          arrayArr[j] = oList.typeList[j]['name'];
+          for (var j in oList.gainList) {
+            arrayfiveArr[j] = oList.gainList[j]['name'];
+          }
+
+          for (var j in oList.intentList) {
+            attendArr[j] = oList.intentList[j]['name'];
+          }
+          self.setData({
+            array: arrayArr,
+            arrayfive: arrayfiveArr,
+            attend: attendArr
+          });
+
+
+        }else{
+          wx.showModal({
+            title: '提示',
+            showCancel: false,
+            content: result.data.message,
+            success: function (res) {
+              //  if (res.confirm) {
+
+              //  } else if (res.cancel) {
+
+              //  }
+            }
+          })
         }
-
-        for (var j in oList.gainList) {
-          arrayfiveArr[j] = oList.gainList[j]['name'];
-        }
-
-        for (var j in oList.intentList) {
-          attendArr[j] = oList.intentList[j]['name'];
-        }
-        self.setData({
-          array: arrayArr,
-          arrayfive: arrayfiveArr,
-          attend: attendArr
-        });
-
+       
       },
       fail: function ({ errMsg }) {
-        console.log('request fail', errMsg)
-        self.setData({
-          isLoading: false
+        console.log('request fail', errMsg);
+        wx.showModal({
+          title: '提示',
+          showCancel: false,
+          content: '服务器报错',
+          success: function (res) {
+            self.setData({
+              isLoading: false
+            })
+          }
         })
+       
       }
     });
 
@@ -389,7 +413,7 @@ Page({
           },
           header: { 'content-type': 'application/x-www-form-urlencoded' },
           success: function (res) {
-            console.log(that.data.ismethod + ' ' + that.data.custName + ' ' + that.data.customerName+' '+ x1 + ' ' + x2 + ' ' + x3 + ' ' + that.data.linkCust + ' ' + that.data.custTel + ' ' + wx.getStorageSync('sellerkey') + ' ' + that.data.dateTime);
+            // console.log(that.data.ismethod + ' ' + that.data.custName + ' ' + that.data.customerName+' '+ x1 + ' ' + x2 + ' ' + x3 + ' ' + that.data.linkCust + ' ' + that.data.custTel + ' ' + wx.getStorageSync('sellerkey') + ' ' + that.data.dateTime);
             if (res.data.success) {
               that.setData({
                 isLoading: true
@@ -414,23 +438,43 @@ Page({
                 });
               }, duration);
             } else {
-              wx.showToast({
-                title: '提交失败',
-              //  icon: 'loading',
-                duration: duration
-              });
-              that.setData({
-                isLoading: false
-              });
+              // wx.showToast({
+              //   title: '提交失败',
+              // //  icon: 'loading',
+              //   duration: duration
+              // });
+              wx.showModal({
+                title: '提示',
+                showCancel: false,
+                content: res.data.message,
+                success: function (res) {
+                   if (res.confirm) {
+                     that.setData({
+                       isLoading: false
+                     });
+                    }// else if (res.cancel) {
+
+                  //  }
+                }
+              })
+              
 
             }
           },
           fail: function ({ errMsg }) {
             // console.log('submit form fail, errMsg is:', errMsg);
-            that.setData({
-              isCodeTrue: errMsg,
-              isLoading: false
+            wx.showModal({
+              title: '提示',
+              showCancel: false,
+              content: '服务器报错',
+              success: function (res) {
+                that.setData({
+                  isCodeTrue: errMsg,
+                  isLoading: false
+                })
+              }
             })
+           
           }
         })
      

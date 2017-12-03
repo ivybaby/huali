@@ -195,12 +195,31 @@ Page({
       header: { 'content-type': 'application/x-www-form-urlencoded' },
       success: function (res) {
         //console.log(res);
+        if(!res.data.success){
+          wx.showModal({
+            title: '提示',
+            showCancel: false,
+            content: res.data.message,
+            success: function (res) {
+            }
+          })
+        }
       },
       fail: function ({ errMsg }) {
         console.log(errMsg);
-        self.setData({
-          loading: false
+        wx.showModal({
+          title: '提示',
+          showCancel: false,
+          content: '服务器错误',
+          success: function (res) {
+            if(res.confirm){
+              self.setData({
+                loading: false
+              })
+            }
+          }
         })
+       
       }
     })
 
@@ -227,6 +246,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    const isExpire = options.isExpire
     /*
     *增加测试*/
    /*wx.navigateTo({
@@ -236,55 +256,74 @@ Page({
       url: '../component/datalist/datalist',
     })*/
     var self = this;
-   
 
     let skey = wx.getStorageSync('sellerkey');  //获取本地的sellerkey
-  
+
     var isLogin = app.globalData.hasLogin;
     if ((wx.getStorageSync('sellerkey').length > 0) && (wx.getStorageSync('sellerkey') != '')) {
-        /* wx.navigateTo({
-           url: '../component/customer/customer',
-         })*/
+      /* wx.navigateTo({
+         url: '../component/customer/customer',
+       })*/
       wx.request({
         url: sellerkeyUrl,
         method: 'POST',
         data: {
           sellerkey: skey
-          },
+        },
         header: { 'content-type': 'application/x-www-form-urlencoded' },
         success: function (result) {
           if (result.data.success) {
-            wx.switchTab({
-              url: '../component/datalist/datalist',
-            })
-          }else{
+            if (isExpire!='1'){
+              wx.switchTab({
+                url: '../component/datalist/datalist',
+              })
+            }
+          
+          } else {
             console.log('request fail', result.data.message);
+            wx.showModal({
+              title: '提示',
+              showCancel: false,
+              content: result.data.message,
+              success: function (res) {
+
+              }
+            })
           }
         },
         fail: function ({ errMsg }) {
-          console.log('request fail', errMsg)
+          console.log('request fail', errMsg);
+          wx.showModal({
+            title: '提示',
+            showCancel: false,
+            content: '服务器错误',
+            success: function (res) {
+            
+            }
+          })
         }
       });
-     
-     }else{
-       // var isLogin=true;
-       if (isLogin === false || typeof (isLogin) == 'undefined') {
-         wx.login({
-           success: _getUserInfo
-         })
 
-       } 
-     }
-    
+    } else {
+      // var isLogin=true;
+      if (isLogin === false || typeof (isLogin) == 'undefined') {
+        wx.login({
+          success: _getUserInfo
+        })
 
+      }
+    }
     function _getUserInfo() {
       wx.getUserInfo({
         success: function (res) {
-          app.globalData.hasLogin=true;
+          app.globalData.hasLogin = true;
           self.update()
         }
       })
     }
+    
+
+ 
 
   
     // 调用函数时，传入new Date()参数，返回值是日期和时间  
@@ -335,10 +374,20 @@ Page({
 
       },
       fail: function ({ errMsg }) {
-        console.log('request fail', errMsg)
-        self.setData({
-          isLoading: false
+        console.log('request fail', errMsg);
+        wx.showModal({
+          title: '提示',
+          showCancel: false,
+          content: '服务器错误',
+          success: function (res) {
+            if (res.confirm) {
+              self.setData({
+                isLoading: false
+              })
+            }
+          }
         })
+       
       }
     });
 
@@ -350,7 +399,15 @@ Page({
         // console.log('setNavigationBarTitle success')
       },
       fail: function (err) {
-        // console.log('setNavigationBarTitle fail, err is', err)
+        wx.showModal({
+          title: '提示',
+          showCancel: false,
+          content: '服务器错误',
+          success: function (res) {
+            
+          }
+        })
+        
       }
     });
 
@@ -369,7 +426,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-
+    
   },
 
   /**
@@ -515,8 +572,8 @@ Page({
           },
           header: { 'content-type': 'application/x-www-form-urlencoded' },
           success: function (res) {
-            console.log(arrEnId[that.data.index][that.data.indexCom]);
-            // console.log(res);
+           // console.log(arrEnId[that.data.index][that.data.indexCom]);
+           
             if (res.data.success) {//返回是成功的
 
               that.setData({
@@ -524,7 +581,7 @@ Page({
                 isLoading: false
               })
               wx.setStorageSync(that.data.setKey, that.data.setKeyVal);/* 缓存 sellerkey */
-             // console.log(wx.getStorageSync('sellerkey'));
+           
               wx.showToast({
                 title: '绑定成功',
                 icon: 'success',
@@ -542,22 +599,44 @@ Page({
                 });
               }, 500)
             } else {
-              wx.showToast({
-                title: '绑定失败',
-                duration: 1000
-              });
-              that.setData({
-                isLoading: false
-              });
+              // wx.showToast({
+              //   title: '绑定失败',
+              //   duration: 1000
+              // });
+              wx.showModal({
+                title: '提示',
+                showCancel:false,
+                content: res.data.message,
+                success: function (res) {
+                  if (res.confirm) {
+                    that.setData({
+                      isLoading: false
+                    });
+                   } //else if (res.cancel) {
+
+                  //  }
+                }
+              })
+              
             }
 
           },
           fail: function ({ message }) {
             // console.log('submit form fail, errMsg is:', message); 
-            that.setData({
-              isCodeTrue: message,
-              isLoading: false
+            wx.showModal({
+              title: '提示',
+              showCancel: false,
+              content: '服务器错误',
+              success: function (res) {
+                if (res.confirm) {
+                  that.setData({
+                    isCodeTrue: message,
+                    isLoading: false
+                  })
+                }
+              }
             })
+            
           }
         })
 

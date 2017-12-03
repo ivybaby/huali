@@ -2,7 +2,7 @@
 var sliderWidth = 82; // 需要设置slider的宽度，用于计算中间位置
 const datalistUrl = require('../../../config').datalistUrl + '/customerList.action';
 const searchUrl = require('../../../config').searchUrl + '/search.action'
-
+const sellerkeyUrl = require('../../../config').sellerkeyUrl + '/checkSeller.action';/* 验证selleykey */
 // 当前页数  
 var pageNum = 0;
 var timeNum = 0;
@@ -161,7 +161,6 @@ Page({
         if (result.data.success) {
 
           var oName = result.data.dataSearch.customerList;
-
           if (oName.length > 0) {
             that.setData({
               list: [],
@@ -178,17 +177,42 @@ Page({
             })
           }
         } else {
-          that.setData({
-            ishidden: false
+
+          wx.showModal({
+            title: '提示',
+            showCancel: false,
+            content: result.data.message,
+            success: function (res) {
+              if (res.confirm) {
+                that.setData({
+                  ishidden: false
+                })
+              }//else if (res.cancel) {
+
+              //  }
+            }
           })
+          
         }
       },
       fail: function ({ errMsg }) {
         console.log('request fail', errMsg)
-        that.setData({
-          isLoading: false,
-          ishidden: true
+        wx.showModal({
+          title: '提示',
+          showCancel: false,
+          content: '服务器错误',
+          success: function (res) {
+            if (res.confirm) {
+              that.setData({
+                isLoading: false,
+                ishidden: true
+              })
+            }//else if (res.cancel) {
+
+            //  }
+          }
         })
+      
       }
     });
   },
@@ -203,9 +227,8 @@ Page({
       header: { 'content-type': 'application/x-www-form-urlencoded' },
       success: function (res) {
         if (res.data.success) {
-          // console.log("loadMsgData"+' '+that.data.isAll);
+          
           var oName = res.data.dataCustomerList.customerList;
-          // console.log(oName);
           var oLen = oName.length;
           if (oLen > 0) {
             if (oLen < (that.data.maxSize)) {
@@ -230,14 +253,29 @@ Page({
                 ishidden: false
               });
             }
-
           }
+        }else{
+          wx.showModal({
+            title: '提示',
+            showCancel: false,
+            content: res.data.message,
+            success: function (res) {
+            }
+          })
         }
       },
       fail: function ({ errMsg }) {
         console.log('request fail', errMsg);
+        wx.showModal({
+          title: '提示',
+          showCancel: false,
+          content: '服务器错误',
+          success: function (res) {
+          }
+        })
       },
       complete: function () {
+        wx.hideLoading()
         that.loading = false
       }
     });
@@ -255,7 +293,7 @@ Page({
         fail: function (err) {
         }
       });*/
-
+    
     wx.getSystemInfo({
       success: function (res) {
         that.setData({
@@ -267,13 +305,7 @@ Page({
       }
     });
     wx.showLoading({
-      title: '加载中',
-    });
-    that.loadMsgData(that, datalistUrl, {
-      // sellerkey: '+vo+cgvtgnw=',
-      sellerkey: wx.getStorageSync('sellerkey'),
-      num: pageNum,
-      orderby: that.data.activeIndex
+      title: '加载中'
     });
     setTimeout(function () { 
       wx.hideLoading()
@@ -312,36 +344,7 @@ Page({
   },
   lower: function () {//触底滚动时触发
     // console.log("lower");
-    let that = this;
-    if (this.loading) {
-      // console.log("iSLOADING");
-      return
-    }
-    that.loading = true;
-
-    if (that.data.isAll) {
-      wx.showToast({
-        title: '已全部加载',
-        icon: 'success',
-        duration: 1000
-      });
-    } else {
-
-      if (that.data.isSearch) {
-        wx.showLoading({
-          title: '加载中',
-        })
-        setTimeout(function () {
-          that.loadMsgData(that, datalistUrl, {
-            //sellerkey: '+vo+cgvtgnw=',
-            sellerkey: wx.getStorageSync('sellerkey'),
-            num: pageNum,
-            orderby: that.data.activeIndex
-          });
-          wx.hideLoading();
-        }, 1000)
-      }
-    }
+    
   },
 
   /**
@@ -355,14 +358,42 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-    /* 设置标题 */
-    /* wx.setNavigationBarTitle({
-       title: '客户信息登记',
-       success: function () {
-       },
-       fail: function (err) {
-       }
-     });*/
+    let skey = wx.getStorageSync('sellerkey');  //获取本地的sellerkey
+    let that=this;
+    
+    wx.request({
+      url: sellerkeyUrl,
+      method: 'POST',
+      data: {
+        sellerkey: skey
+      },
+      header: { 'content-type': 'application/x-www-form-urlencoded' },
+      success: function (result) {
+        if (result.data.success) {
+          that.hideInput()
+        } else {
+          wx.showModal({
+            title: '提示',
+            showCancel: false,
+            content: res.data.message,
+            success: function (res) {
+                if (res.confirm) {
+                  wx.navigateTo({
+                    url: '../../index/index?isExpire=1'
+                  });
+                }// else if (res.cancel) {
+
+              //  }
+            }
+          })
+    
+        }
+      },
+      fail: function ({ errMsg }) {
+        console.log('request fail', errMsg)
+      }
+    });
+    
   },
 
   /**
@@ -401,14 +432,36 @@ Page({
       }
     }, 1000)
   },
-  uper: function () {
-    this.onPullDownRefresh();
-  },
+
+  // uper: function () {
+  //   this.onPullDownRefresh();
+  // },
 
   /**
    * 页面上拉触底事件的处理函数
    */
   onReachBottom: function () {
+    if (this.data.isAll) {
+      wx.showToast({
+        title: '已全部加载',
+        icon: 'success',
+        duration: 1000
+      });
+    } else {
+      if (this.data.isSearch) {
+        wx.showLoading({
+          title: '加载中',
+        })
+
+        const that = this
+        this.loadMsgData(that, datalistUrl, {
+          //sellerkey: '+vo+cgvtgnw=',
+          sellerkey: wx.getStorageSync('sellerkey'),
+          num: pageNum,
+          orderby: that.data.activeIndex
+        })
+      }
+    }
   },
 
   onShareAppMessage: function () {

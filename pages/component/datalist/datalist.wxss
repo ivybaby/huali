@@ -4,17 +4,6 @@
   padding-top:2px;
   padding-bottom: 2px;
 }
-scroll-view{
-  height: calc(100vh);
-}
-page,
-.page,
-.page__bd{
-    height: 100%;
-}
-.page__bd{
-    padding-bottom: 0;
-}
 .weui-tab__content{
     text-align: center;
 }
@@ -139,3 +128,16 @@ page,
 .page-content{
   overflow-y: hidden
 }
+/* .weui-search-bar{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  z-index: 4;
+}
+
+.list-box{
+  margin-top:54px;
+  position: relative;
+  z-index: 2
+} */
