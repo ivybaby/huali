@@ -103,7 +103,7 @@
           <view class="weui-label">联系电话</view>
         </view>
         <view class="weui-cell__bd">
-          <input class="weui-input" type="number" placeholder="联系电话" name="telephone" value='{{custTel}}' maxlength='11'  bindinput="bindTelInput"></input>
+          <input class="weui-input" type="number" placeholder="联系电话" name="telephone" value='{{custTel}}' maxlength='12'  bindinput="bindTelInput"></input>
         </view>
       </view>
     </view>

@@ -10,6 +10,7 @@ var arrayArr = [],
   arrayfiveArr = [],
   attendArr = [];
 const duration = 2000;
+var isCommit=false;
 
 Page({
   /**
@@ -169,7 +170,6 @@ Page({
    */
   onLoad: function (options) {
     var self = this;
-
     // 调用函数时，传入new Date()参数，返回值是日期和时间  
     var time = util.formatTime(new Date());
     var finalTime = time.substring(0, time.indexOf(' ')).split('/').join('-');
@@ -375,14 +375,15 @@ Page({
     that.setData({
       isLoading: true
     });
-
-
+    if(isCommit){return};
+    
+    isCommit=true;
     var oName = e.detail.value.name.replace(/\s*/, ""); /*客户名称*/
     var oContact = e.detail.value.customerContact.replace(/\s*/, "");/* 客户联系人 */
     var oTelephone = e.detail.value.telephone.replace(/\s/, "");/* 联系电话 */
 
     that.regTrue(oName, true, that.custName, "客户名称");
-
+    console.log(that.isLoading)
     if (that.must1) {
       that.regTrue(oContact, true, that.linkCust, "客户联系人", true);
       if (that.must2) {
@@ -392,7 +393,7 @@ Page({
     var x1 = parseInt(that.data.index) + 1;
     var x2 = parseInt(that.data.indexfive) + 1;
     var x3 = parseInt(that.data.indexattend) + 1;
-
+    
     if (that.must1 && that.must2 && that.must3) {
      
         wx.request({  //提交 
@@ -436,6 +437,7 @@ Page({
                   isTimeDis: true,
                   isLoading: false
                 });
+                isCommit = false;
               }, duration);
             } else {
               // wx.showToast({
@@ -452,6 +454,7 @@ Page({
                      that.setData({
                        isLoading: false
                      });
+                     isCommit = false;
                     }// else if (res.cancel) {
 
                   //  }
@@ -472,6 +475,7 @@ Page({
                   isCodeTrue: errMsg,
                   isLoading: false
                 })
+                isCommit = false;
               }
             })
            
