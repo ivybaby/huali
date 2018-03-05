@@ -9,8 +9,8 @@ const upUrl = require('../../../config').upUrl + '/newCustomer.action';
 var arrayArr = [],
   arrayfiveArr = [],
   attendArr = [];
-const duration = 2000;
-var isCommit=false;
+const duration = 1000;
+
 
 Page({
   /**
@@ -31,10 +31,11 @@ Page({
     custName: '',
     linkCust: '',
     custTel: '',
-    must1: false,
+    isLoading: false,
+    must1:false,
     must2: false,
     must3: false,
-    isLoading: false,
+    isCommit:false,
     isTimeDis:true,
     list: '',
     custDegree: '提交',
@@ -321,7 +322,7 @@ Page({
  * 提交表单
  */
   regTrue: function (textVal, isText, targtVal, modalMessage, status) {
-
+    var self=this;
     if (textVal.length === 0 || textVal == ' ') {
       this.setData({
         targtVal: textVal,
@@ -336,13 +337,16 @@ Page({
       if (isText) {
         /*if (/^[a-zA-Z 0-9]{1,40}$/.test(textVal) || /^[\u4e00-\u9fa5]{1,10}$/.test(textVal)) {*/
         this.setData({
-          targtVal: textVal,
-          isLoading: false
+          targtVal: textVal
         });
         if (status) {
-          this.must2 = true;
+          self.setData({
+            must2: true
+          });
         } else {
-          this.must1 = true;
+          self.setData({
+            must1: true
+          });
         }
       } else {
         /* if (/^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0-9]))\d{8}$/.test(textVal)) {
@@ -358,13 +362,19 @@ Page({
           this.setData({
             isLoading: false
           });
-          this.must3 = false;
+          // must3 = false;
+          self.setData({
+            must3: false
+          });
 
         } else {
           this.setData({
             targtVal: textVal
           });
-          this.must3 = true;
+          // must3 = true;
+          self.setData({
+            must3: true
+          });
         }
       }
 
@@ -372,21 +382,25 @@ Page({
   },
   formSubmit: function (e) {
     var that = this;
+
     that.setData({
-      isLoading: true
+      isLoading: true,
+      must1: false,
+      must2: false,
+      must3: false
     });
-    if(isCommit){return};
     
-    isCommit=true;
+    
+    
     var oName = e.detail.value.name.replace(/\s*/, ""); /*客户名称*/
     var oContact = e.detail.value.customerContact.replace(/\s*/, "");/* 客户联系人 */
     var oTelephone = e.detail.value.telephone.replace(/\s/, "");/* 联系电话 */
 
     that.regTrue(oName, true, that.custName, "客户名称");
-    console.log(that.isLoading)
-    if (that.must1) {
+    
+    if (that.data.must1) {
       that.regTrue(oContact, true, that.linkCust, "客户联系人", true);
-      if (that.must2) {
+      if (that.data.must2) {
         that.regTrue(oTelephone, false, that.custTel, "联系电话");
       }
     }
@@ -394,8 +408,13 @@ Page({
     var x2 = parseInt(that.data.indexfive) + 1;
     var x3 = parseInt(that.data.indexattend) + 1;
     
-    if (that.must1 && that.must2 && that.must3) {
-     
+    if ((that.data.must1) && (that.data.must2) && (that.data.must3)) {
+      if (that.data.isCommit) {
+        return
+      };
+      that.setData({
+        isCommit:true
+      })
         wx.request({  //提交 
           url: upUrl,
           method: 'POST',
@@ -414,31 +433,35 @@ Page({
           },
           header: { 'content-type': 'application/x-www-form-urlencoded' },
           success: function (res) {
-            // console.log(that.data.ismethod + ' ' + that.data.custName + ' ' + that.data.customerName+' '+ x1 + ' ' + x2 + ' ' + x3 + ' ' + that.data.linkCust + ' ' + that.data.custTel + ' ' + wx.getStorageSync('sellerkey') + ' ' + that.data.dateTime);
+    
             if (res.data.success) {
-              that.setData({
-                isLoading: true
-              });
+              // that.setData({
+              //   isLoading: true
+              // });
               wx.showToast({
                 title: '提交成功',
                 icon: 'success',
-                duration: duration
+                duration: duration,
+                success:function(){
+                  that.setData({
+                    custName: '',
+                    index: 0,
+                    indexfive: 0,
+                    indexattend: 0,
+                    linkCust: '',
+                    custTel: '',
+                    custDegree: '提交',
+                    dateTime: '',
+                    isTimeDis: true,
+                    isLoading: false,
+                    isCommit:false
+                  });
+                 
+                }
               });
-              setTimeout(function () {
-                that.setData({
-                  custName: '',
-                  index: 0,
-                  indexfive: 0,
-                  indexattend: 0,
-                  linkCust: '',
-                  custTel: '',
-                  custDegree: '提交',
-                  dateTime:'',
-                  isTimeDis: true,
-                  isLoading: false
-                });
-                isCommit = false;
-              }, duration);
+              // setTimeout(function () {
+                
+              // }, duration);
             } else {
               // wx.showToast({
               //   title: '提交失败',
@@ -452,9 +475,10 @@ Page({
                 success: function (res) {
                    if (res.confirm) {
                      that.setData({
-                       isLoading: false
+                       isLoading: false,
+                       isCommit:false
                      });
-                     isCommit = false;
+              
                     }// else if (res.cancel) {
 
                   //  }
@@ -465,7 +489,6 @@ Page({
             }
           },
           fail: function ({ errMsg }) {
-            // console.log('submit form fail, errMsg is:', errMsg);
             wx.showModal({
               title: '提示',
               showCancel: false,
@@ -473,9 +496,10 @@ Page({
               success: function (res) {
                 that.setData({
                   isCodeTrue: errMsg,
-                  isLoading: false
+                  isLoading: false,
+                  isCommit:false
                 })
-                isCommit = false;
+                // isCommit = false;
               }
             })
            
